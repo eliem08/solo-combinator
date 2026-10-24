@@ -1,4 +1,5 @@
 """Application scoring and SAFE math for a solo-founder accelerator."""
+
 from __future__ import annotations
 
 import math
@@ -27,7 +28,7 @@ class Application:
     users: int | None = None
 
     @classmethod
-    def from_dict(cls, d: dict) -> "Application":
+    def from_dict(cls, d: dict) -> Application:
         known = {k: v for k, v in d.items() if k in cls.__dataclass_fields__}
         return cls(**known)
 
@@ -53,12 +54,15 @@ def score_application(app: Application) -> Score:
     runway = app.cash / app.monthly_burn if app.monthly_burn else float("inf")
     net_new_arr = app.mrr * app.mom_growth * 12
     burn_multiple = (app.monthly_burn * 12 / net_new_arr) if net_new_arr > 0 else float("inf")
-    efficiency = _clamp(
-        0.5 * (100 if burn_multiple <= 1 else 100 / burn_multiple)
-        + 0.5 * min(runway / 12, 1) * 100
-    )
+    efficiency = _clamp(0.5 * (100 if burn_multiple <= 1 else 100 / burn_multiple) + 0.5 * min(runway / 12, 1) * 100)
     velocity = _clamp(app.ships_per_week / 5 * 100)
-    parts = {"traction": traction, "growth": growth, "leverage": leverage, "efficiency": efficiency, "velocity": velocity}
+    parts = {
+        "traction": traction,
+        "growth": growth,
+        "leverage": leverage,
+        "efficiency": efficiency,
+        "velocity": velocity,
+    }
     total = sum(parts[k] * w for k, w in WEIGHTS.items())
 
     flags = []

@@ -9,8 +9,18 @@ EXAMPLES = pathlib.Path(__file__).resolve().parent.parent / "examples" / "applic
 
 class Tests(unittest.TestCase):
     def test_strong_app_accepted(self):
-        s = score_application(Application("x", mrr=50_000, mom_growth=0.25, agents=12, automated_share=0.9,
-                                          monthly_burn=5000, cash=100_000, ships_per_week=6))
+        s = score_application(
+            Application(
+                "x",
+                mrr=50_000,
+                mom_growth=0.25,
+                agents=12,
+                automated_share=0.9,
+                monthly_burn=5000,
+                cash=100_000,
+                ships_per_week=6,
+            )
+        )
         self.assertEqual(s.decision, "accept")
         self.assertGreaterEqual(s.total, 80)
 

@@ -1,5 +1,7 @@
 # solo-combinator
 
+[![CI](https://github.com/eliem08/solo-combinator/actions/workflows/ci.yml/badge.svg)](https://github.com/eliem08/solo-combinator/actions/workflows/ci.yml)
+
 > **Y Combinator for one-person companies** — back solo founders running a team of agents.
 
 The next wave of companies has one human and twenty agents. Traditional
@@ -42,3 +44,26 @@ solo-combinator safe --invest 125000 --cap 2000000 --round-pre 8000000 --round-s
 - Live verification via Stripe / GitHub / agent-tracer integrations
 - Cohort dashboard and demo-day investor portal
 - Shared agent infra credits (model, compute, tooling perks)
+
+## Development
+
+Zero runtime dependencies; Python 3.10+.
+
+```bash
+python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
+pip install -e ".[dev]"
+python -m unittest discover -s tests -t .           # unit + CLI smoke tests
+ruff check . && ruff format --check .               # lint + format
+```
+
+```
+solo_combinator/core.py       domain logic (pure, importable, fully tested)
+solo_combinator/__main__.py   CLI (`solo-combinator ...` / `python -m solo_combinator ...`)
+tests/                unit tests + generated CLI smoke tests
+examples/             sample inputs used by the docs and smoke tests
+```
+
+CI runs lint and tests on Ubuntu and Windows across Python 3.10, 3.12 and 3.13.
+Design, data model, trade-offs and production path: **[ARCHITECTURE.md](ARCHITECTURE.md)**.
+
+Part of the [agent-economy](https://github.com/eliem08/agent-economy) portfolio (idea #3).
