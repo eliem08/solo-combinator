@@ -21,6 +21,18 @@ solo-combinator rank examples/applications.json
 solo-combinator safe --invest 125000 --cap 2000000 --round-pre 8000000 --round-size 2000000
 ```
 
+## Web app and API
+
+Every command is also a JSON API endpoint and a browser form, served by the built-in web app.
+
+```bash
+solo-combinator-web --port 8000          # then open http://127.0.0.1:8000
+docker build -t solo-combinator . && docker run -p 8000:8000 -v solo-combinator-data:/data solo-combinator
+```
+
+Endpoints: `POST /api/rank`, `POST /api/safe`, plus `GET /healthz` and `GET /api/spec` (machine-readable field list).
+Files are sent as `{"name": ..., "content": ...}`, folders as `{"files": [...]}` or a base64 zip.
+
 ## Pricing
 
 Every plan starts with a 14-day free trial. Prices in USD, billed monthly unless noted.

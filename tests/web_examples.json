@@ -1,0 +1,20 @@
+[
+ {
+  "op": "rank",
+  "payload": {
+   "file": {
+    "name": "applications.json",
+    "content": "[\n  {\"name\": \"Ava / InvoiceBot\", \"mrr\": 42000, \"mom_growth\": 0.18, \"agents\": 14, \"automated_share\": 0.85, \"humans\": 1, \"monthly_burn\": 6000, \"cash\": 90000, \"ships_per_week\": 6},\n  {\"name\": \"Ben / RecruitAI\", \"mrr\": 3000, \"mom_growth\": 0.35, \"agents\": 6, \"automated_share\": 0.6, \"humans\": 1, \"monthly_burn\": 4000, \"cash\": 10000, \"ships_per_week\": 4},\n  {\"name\": \"Cy / Idea stage\", \"mrr\": 0, \"mom_growth\": 0, \"agents\": 1, \"automated_share\": 0.1, \"humans\": 1, \"monthly_burn\": 2000, \"cash\": 4000, \"ships_per_week\": 1, \"users\": 0}\n]\n"
+   }
+  }
+ },
+ {
+  "op": "safe",
+  "payload": {
+   "invest": 125000.0,
+   "cap": 2000000.0,
+   "round_pre": 8000000.0,
+   "round_size": 2000000.0
+  }
+ }
+]

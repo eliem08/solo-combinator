@@ -23,6 +23,7 @@ dev = ["ruff>=0.6"]
 
 [project.scripts]
 solo-combinator = "solo_combinator.__main__:main"
+solo-combinator-web = "solo_combinator.web:main"
 
 [project.urls]
 Repository = "https://github.com/eliem08/solo-combinator"
