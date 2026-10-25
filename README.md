@@ -27,8 +27,11 @@ Every command is also a JSON API endpoint and a browser form, served by the buil
 
 ```bash
 solo-combinator-web --port 8000          # then open http://127.0.0.1:8000
-docker build -t solo-combinator . && docker run -p 8000:8000 -v solo-combinator-data:/data solo-combinator
+solo-combinator-web keys create --label "first customer"   # prints an API key (stored hashed)
+docker build -t solo-combinator . && docker run -p 8000:8000 -e API_KEYS=sk_... -v solo-combinator-data:/data solo-combinator
 ```
+
+Every API call needs `Authorization: Bearer <key>` once any key exists; a server on a public address refuses to start without one. Calls are rate-limited per key (60/min, `--rate`) and metered: `solo-combinator-web usage` prints calls per key for billing.
 
 Endpoints: `POST /api/rank`, `POST /api/safe`, plus `GET /healthz` and `GET /api/spec` (machine-readable field list).
 Files are sent as `{"name": ..., "content": ...}`, folders as `{"files": [...]}` or a base64 zip.
