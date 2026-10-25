@@ -29,8 +29,23 @@ class Application:
 
     @classmethod
     def from_dict(cls, d: dict) -> Application:
+        if not isinstance(d, dict):
+            raise ValueError(f"each application must be an object, got {d!r}")
         known = {k: v for k, v in d.items() if k in cls.__dataclass_fields__}
-        return cls(**known)
+        app = cls(**known)
+        app.validate()
+        return app
+
+    def validate(self) -> None:
+        """Reject values that would crash scoring or game it (negative burn reads as perfect efficiency)."""
+        for k in ("mrr", "agents", "humans", "monthly_burn", "cash", "ships_per_week"):
+            v = getattr(self, k)
+            if not (isinstance(v, (int, float)) and math.isfinite(v) and v >= 0):
+                raise ValueError(f"{self.name}: {k} must be a finite number >= 0, got {v!r}")
+        if not (isinstance(self.mom_growth, (int, float)) and math.isfinite(self.mom_growth)):
+            raise ValueError(f"{self.name}: mom_growth must be a finite number")
+        if not (isinstance(self.automated_share, (int, float)) and 0 <= self.automated_share <= 1):
+            raise ValueError(f"{self.name}: automated_share must be between 0 and 1")
 
 
 @dataclass
@@ -77,6 +92,8 @@ def score_application(app: Application) -> Score:
 
 
 def rank(apps: list[dict]) -> list[Score]:
+    if not isinstance(apps, list):
+        raise ValueError("applications must be a JSON list")
     return sorted((score_application(Application.from_dict(a)) for a in apps), key=lambda s: -s.total)
 
 
@@ -86,6 +103,8 @@ def post_money_safe(invest: float, cap: float, round_pre: float | None = None, r
         raise ValueError("need 0 < invest < cap")
     own = invest / cap
     out = {"ownership_at_conversion": own}
+    if (round_pre is not None and round_pre <= 0) or (round_size is not None and round_size <= 0):
+        raise ValueError("round_pre and round_size must be > 0")
     if round_pre and round_size:
         dilution = round_pre / (round_pre + round_size)
         out["ownership_after_round"] = own * dilution

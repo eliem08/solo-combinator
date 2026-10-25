@@ -40,6 +40,16 @@ class Tests(unittest.TestCase):
         self.assertAlmostEqual(r["ownership_after_round"], 0.05)
         with self.assertRaises(ValueError):
             post_money_safe(10, 5)
+        with self.assertRaises(ValueError):
+            post_money_safe(125_000, 2_000_000, -8_000_000, 2_000_000)
+
+    def test_gaming_values_and_junk_input_are_rejected(self):
+        for bad in ({"monthly_burn": -50_000}, {"automated_share": 10}, {"mrr": "5000"}, {"mrr": float("nan")}):
+            with self.subTest(bad=bad), self.assertRaises(ValueError):
+                rank([{"name": "x", "mrr": 5000, **bad}])
+        for junk in (None, {"name": "x"}, [1]):
+            with self.subTest(junk=junk), self.assertRaises(ValueError):
+                rank(junk)
 
 
 if __name__ == "__main__":
