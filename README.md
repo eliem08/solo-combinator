@@ -1,18 +1,44 @@
-# solo-combinator
+<!-- sell-kit:start -->
+# Solo Combinator
 
 [![CI](https://github.com/eliem08/solo-combinator/actions/workflows/ci.yml/badge.svg)](https://github.com/eliem08/solo-combinator/actions/workflows/ci.yml)
 
-> **Y Combinator for one-person companies** — back solo founders running a team of agents.
+> **Score and rank one-person companies by the leverage that actually predicts returns.**
 
-The next wave of companies has one human and twenty agents. Traditional
-accelerators screen for co-founder teams and headcount plans; this one
-screens for **leverage**: revenue per human, hours automated, and how much
-of the business actually runs on agents.
+**Who it's for:** Accelerators, angel syndicates and micro-VCs backing solo founders.
 
-This repo is the fund's operating system: application scoring, batch
-ranking and SAFE math.
+**The problem:** Solo founders running agent teams don't fit classic headcount-based screening, so good deals get missed and bad ones get through.
 
-## What the MVP does
+**What you get:** Leverage-weighted scoring of traction, growth, automation and efficiency, with ranked cohorts, red flags and post-money SAFE math.
+
+## Quickstart
+
+Customers receive a release archive with the wheel and the examples. Python 3.10+ and no other dependencies.
+
+```bash
+pip install solo_combinator-0.1.0-py3-none-any.whl
+solo-combinator rank examples/applications.json
+solo-combinator safe --invest 125000 --cap 2000000 --round-pre 8000000 --round-size 2000000
+```
+
+## Pricing
+
+Every plan starts with a 14-day free trial. Prices in USD, billed monthly unless noted.
+
+| Plan | Price | Includes |
+|---|---|---|
+| **Angel** | $49 per month | Up to 100 applications a month; Scoring and ranking; SAFE calculator |
+| **Fund** | $299 per month | Unlimited applications; Custom scoring weights; Cohort exports |
+| **Program** | $1,500 per cohort | White-label application review; Partner-ready ranking memo; Onboarding call |
+
+To start a trial or buy a plan, email **sales@YOUR-DOMAIN.com**.
+
+## Licence
+
+Proprietary. Copyright (c) 2026 eliem08. All rights reserved. Use requires a paid plan or an active trial; see [LICENSE](LICENSE).
+<!-- sell-kit:end -->
+
+## What it does
 
 - **Application scoring** across 5 weighted dimensions (traction, growth,
   agent leverage, capital efficiency, founder velocity), each 0–100, with

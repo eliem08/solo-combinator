@@ -1,4 +1,4 @@
-"""Y Combinator for one-person companies: back solo founders running a team of agents."""
+"""Solo Combinator: Score and rank one-person companies by the leverage that actually predicts returns."""
 
 from .core import *
 
