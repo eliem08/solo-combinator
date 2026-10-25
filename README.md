@@ -46,7 +46,7 @@ Every plan starts with a 14-day free trial. Prices in USD, billed monthly unless
 | **Fund** | $299 per month | Unlimited applications; Custom scoring weights; Cohort exports |
 | **Program** | $1,500 per cohort | White-label application review; Partner-ready ranking memo; Onboarding call |
 
-To start a trial or buy a plan, email **sales@YOUR-DOMAIN.com**.
+To start a trial or buy a plan, [request access](https://github.com/eliem08/solo-combinator/issues/new?title=Solo%20Combinator%20trial&labels=sales).
 
 ## Licence
 
