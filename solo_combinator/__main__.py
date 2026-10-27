@@ -22,6 +22,12 @@ def build_parser():
     r = sub.add_parser("rank", help="score and rank applications from a JSON list")
     r.add_argument("file")
     r.add_argument("--json", action="store_true")
+    r.add_argument(
+        "--weights",
+        default=None,
+        help='custom scoring weights as JSON, e.g. \'{"traction": 0.4, "growth": 0.1}\' '
+        "(missing dimensions keep their defaults; weights are normalized to sum to 1)",
+    )
     s = sub.add_parser("safe", help="post-money SAFE ownership math")
     s.add_argument("--invest", type=_finite_float, required=True)
     s.add_argument("--cap", type=_finite_float, required=True)
@@ -39,8 +45,14 @@ def _run(argv=None):
             print(f"{k:<26} {v:.2%}" if "ownership" in k else f"{k:<26} ${v:,.0f}")
         return 0
 
+    weights = None
+    if getattr(a, "weights", None):
+        try:
+            weights = json.loads(a.weights)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"--weights must be valid JSON: {e}") from e
     with open(a.file, encoding="utf-8-sig") as fh:
-        scores = rank(json.load(fh))
+        scores = rank(json.load(fh), weights)
     if a.json:
         print(json.dumps([s.__dict__ for s in scores], indent=2))
         return 0

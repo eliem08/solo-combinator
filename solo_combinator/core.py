@@ -38,6 +38,8 @@ class Application:
 
     def validate(self) -> None:
         """Reject values that would crash scoring or game it (negative burn reads as perfect efficiency)."""
+        if not (isinstance(self.name, str) and self.name.strip()):
+            raise ValueError(f"application name must be a non-empty string, got {self.name!r}")
         for k in ("mrr", "agents", "humans", "monthly_burn", "cash", "ships_per_week"):
             v = getattr(self, k)
             if not (isinstance(v, (int, float)) and math.isfinite(v) and v >= 0):
@@ -46,6 +48,10 @@ class Application:
             raise ValueError(f"{self.name}: mom_growth must be a finite number")
         if not (isinstance(self.automated_share, (int, float)) and 0 <= self.automated_share <= 1):
             raise ValueError(f"{self.name}: automated_share must be between 0 and 1")
+        if self.users is not None and (
+            not isinstance(self.users, (int, float)) or not math.isfinite(self.users) or self.users < 0
+        ):
+            raise ValueError(f"{self.name}: users must be a finite number >= 0, got {self.users!r}")
 
 
 @dataclass
@@ -57,7 +63,33 @@ class Score:
     decision: str = ""
 
 
-def score_application(app: Application) -> Score:
+def _normalize_weights(weights: dict | None) -> dict:
+    """Validate custom weights and normalize them to sum to 1.
+
+    Missing dimensions fall back to the default weight for that
+    dimension; unknown dimensions and non-finite or negative weights
+    are rejected, so a custom rubric cannot silently drop a dimension
+    or game the total.
+    """
+    if weights is None:
+        return dict(WEIGHTS)
+    if not isinstance(weights, dict):
+        raise ValueError("weights must be an object mapping dimension to weight")
+    unknown = set(weights) - set(WEIGHTS)
+    if unknown:
+        raise ValueError(f"unknown scoring dimensions: {sorted(unknown)}")
+    merged = dict(WEIGHTS)
+    merged.update(weights)
+    for k, v in merged.items():
+        if not (isinstance(v, (int, float)) and math.isfinite(v) and v >= 0):
+            raise ValueError(f"weight for {k} must be a finite number >= 0, got {v!r}")
+    total = sum(merged.values())
+    if total <= 0:
+        raise ValueError("weights must sum to more than 0")
+    return {k: v / total for k, v in merged.items()}
+
+
+def score_application(app: Application, weights: dict | None = None) -> Score:
     traction = _clamp(100 * math.log10(1 + app.mrr) / math.log10(1 + 50_000))
     growth = _clamp(app.mom_growth / 0.20 * 100)
     rev_per_human = app.mrr * 12 / max(app.humans, 1)
@@ -78,7 +110,7 @@ def score_application(app: Application) -> Score:
         "efficiency": efficiency,
         "velocity": velocity,
     }
-    total = sum(parts[k] * w for k, w in WEIGHTS.items())
+    total = sum(parts[k] * w for k, w in _normalize_weights(weights).items())
 
     flags = []
     if runway < 3:
@@ -91,10 +123,16 @@ def score_application(app: Application) -> Score:
     return Score(app.name, round(total, 1), {k: round(v, 1) for k, v in parts.items()}, flags, decision)
 
 
-def rank(apps: list[dict]) -> list[Score]:
+def rank(apps: list[dict], weights: dict | None = None) -> list[Score]:
     if not isinstance(apps, list):
         raise ValueError("applications must be a JSON list")
-    return sorted((score_application(Application.from_dict(a)) for a in apps), key=lambda s: -s.total)
+    if not apps:
+        raise ValueError("applications must be a non-empty list")
+    _normalize_weights(weights)  # validate before scoring anything
+    return sorted(
+        (score_application(Application.from_dict(a), weights) for a in apps),
+        key=lambda s: -s.total,
+    )
 
 
 def post_money_safe(invest: float, cap: float, round_pre: float | None = None, round_size: float | None = None) -> dict:

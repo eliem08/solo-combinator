@@ -139,7 +139,10 @@ def build_argv(op: dict, payload: dict, workdir: pathlib.Path, data_dir: pathlib
                 opts.extend([f["flag"], *[str(v) for v in values]])
             continue
         else:
-            value = str(value)
+            # JSON objects/arrays sent over the API (e.g. --weights) must
+            # arrive as JSON, not as a Python repr, or the CLI cannot
+            # parse them back.
+            value = json.dumps(value) if isinstance(value, (dict, list)) else str(value)
             if f.get("choices") and value not in f["choices"]:
                 raise BadRequest(f"{f['dest']} must be one of {f['choices']}")
         if f["flag"] is None:
