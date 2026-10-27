@@ -47,10 +47,10 @@ To sell self-serve, set four variables and point a Stripe webhook at `https://<y
 |---|---|
 | `STRIPE_SECRET_KEY` | `sk_live_...` |
 | `STRIPE_WEBHOOK_SECRET` | `whsec_...` |
-| `STRIPE_PRICES` | `team=price_123,business=price_456` |
+| `STRIPE_PRICES` | `angel=price_123,fund=price_456` |
 | `PUBLIC_URL` | `https://solo-combinator.example.com` |
 
-Buyers pick a plan on `/pricing`, pay on Stripe Checkout and see their API key once on the success page. Cancelling the subscription revokes the key. A selling server always requires a key.
+Buyers pick a plan on `/pricing`, pay on Stripe Checkout and see their API key once on the success page. Cancelling the subscription revokes the key. A selling server always requires a key. Self-serve Stripe checkout covers Angel and Fund only; Program is a done-with-you service, invoiced per cohort (see Pricing below), not sold through Stripe checkout.
 
 ## Pricing
 
@@ -58,9 +58,11 @@ Every plan starts with a 14-day free trial. Prices in USD, billed monthly unless
 
 | Plan | Price | Includes |
 |---|---|---|
-| **Angel** | $49 per month | Up to 100 applications a month; Scoring and ranking; SAFE calculator |
-| **Fund** | $299 per month | Unlimited applications; Custom scoring weights; Cohort exports |
+| **Angel** | $49 per month | Scoring and ranking; SAFE calculator |
+| **Fund** | $299 per month | Unlimited applications; Custom scoring weights (`rank --weights`); Cohort exports (JSON via `rank --json`) |
 | **Program** | $1,500 per cohort | White-label application review; Partner-ready ranking memo; Onboarding call |
+
+Program is a done-with-you service delivered by the owner, invoiced per cohort — it is not a self-serve software feature and is not sold through Stripe checkout. Angel has no enforced monthly application cap; if a cap is introduced later, it will be stated here and enforced in code, not just in copy.
 
 To start a trial or buy a plan, [request access](https://github.com/eliem08/solo-combinator/issues/new?title=Solo%20Combinator%20trial&labels=sales).
 
@@ -73,7 +75,9 @@ Proprietary. Copyright (c) 2026 eliem08. All rights reserved. Use requires a pai
 
 - **Application scoring** across 5 weighted dimensions (traction, growth,
   agent leverage, capital efficiency, founder velocity), each 0–100, with
-  red-flag detection (e.g. runway < 3 months, zero revenue + no users)
+  red-flag detection (e.g. runway < 3 months, zero revenue + no users).
+  Weights are customizable per cohort with `rank --weights '{"traction": 0.4}'`
+  (missing dimensions keep their defaults; weights are normalized to sum to 1)
 - **Batch ranking** from a JSON file of applications → accept / interview / pass
 - **Standard deal**: post-money SAFE calculator — ownership at conversion,
   dilution through a priced round
@@ -111,6 +115,7 @@ python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\act
 pip install -e ".[dev]"
 python -m unittest discover -s tests -t .           # unit + CLI smoke tests
 ruff check . && ruff format --check .               # lint + format
+python -m pip wheel . --no-deps -w dist            # customer wheel, as in Quickstart
 ```
 
 ```

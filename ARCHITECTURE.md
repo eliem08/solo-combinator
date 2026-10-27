@@ -31,6 +31,9 @@ flowchart LR
 (agents, automation share, revenue/human), efficiency (burn multiple, runway), velocity (ships/week).
 Decisions: `accept ≥ 65 with no flags`, `interview ≥ 45`, else `pass`. Flags (runway < 3 mo,
 no revenue + no users, > 1 human) block auto-accept but never auto-reject: a human always decides.
+Custom weights (`rank --weights`, and the same field over the API) merge over the defaults and
+are normalized to sum to 1; unknown dimensions, negative, non-finite, or all-zero weights are
+rejected, so a custom rubric cannot silently drop a dimension.
 
 ## 5. Design decisions
 - **Transparent weighted rubric, not a black-box model.** Founders get the breakdown, and partners
@@ -53,3 +56,18 @@ no revenue + no users, > 1 human) block auto-accept but never auto-reject: a hum
 ## 8. Risks
 - Over-indexing on early revenue misses research-heavy ideas. A partner override path with a
   required rationale handles that.
+
+## 9. Limitations (sell-ready audit, 2026-10-27)
+- Metrics are self-reported: there is no live verification from Stripe, GitHub, or agent-tracer
+  yet (roadmap item in §3). Scores are only as honest as the input.
+- No enforced monthly application cap: Angel's former "100 a month" claim was removed from
+  sales copy because it was not enforced in code. Fund is unlimited in the same sense.
+- Program ($1,500/cohort) is a done-with-you service, not self-serve software, and is not
+  sold through Stripe checkout, which is subscription-only in this codebase. Self-serve
+  checkout covers Angel and Fund.
+- Docker build and a live Render/Fly deployment were not verified in the audit environment
+  (no Docker binary there); Dockerfile, render.yaml, and fly.toml are the same template
+  shape as vibe-lube, but a deployment claim remains "not verified" until one is actually made.
+- Stripe prices themselves were not verified against a live Stripe account in this run;
+  the code handles checkout and revocation in tests with mocked Stripe calls, and the
+  README example now uses `angel`/`fund` plan keys to match the plan names.
