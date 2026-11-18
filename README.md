@@ -9,7 +9,7 @@
 
 **The problem:** Solo founders running agent teams don't fit classic headcount-based screening, so good deals get missed and bad ones get through.
 
-**What you get:** Leverage-weighted scoring of traction, growth, automation and efficiency, with ranked cohorts, red flags and post-money SAFE math.
+**What you get:** Leverage-weighted scoring of traction, growth, automation and efficiency, with ranked cohorts, red flags and post-money SAFE math. Applications load straight from your form export, revenue from the founder's Stripe export and shipping pace from their git history.
 
 ## Quickstart
 
@@ -79,6 +79,12 @@ Proprietary. Copyright (c) 2026 eliem08. All rights reserved. Use requires a pai
   Weights are customizable per cohort with `rank --weights '{"traction": 0.4}'`
   (missing dimensions keep their defaults; weights are normalized to sum to 1)
 - **Batch ranking** from a JSON file of applications → accept / interview / pass
+- **No retyping**: `rank` reads the CSV your application form exports (Typeform, Google Forms, Tally). Column
+  names are matched loosely ("Monthly revenue ($)", "MoM growth %", "How many AI agents do you run?"), money can
+  carry `$` and commas, and percentages become fractions.
+- **Measured, not self-reported**: `metrics stripe payments.csv` reads a founder's Stripe payments export and
+  gives MRR (last complete month, failed charges and refunds excluded) and month-on-month growth (average of the
+  last three months). `metrics git ./repo` counts days with commits per week.
 - **Standard deal**: post-money SAFE calculator — ownership at conversion,
   dilution through a priced round
 
@@ -87,6 +93,9 @@ Proprietary. Copyright (c) 2026 eliem08. All rights reserved. Use requires a pai
 ```bash
 pip install -e .
 solo-combinator rank examples/applications.json
+solo-combinator rank typeform-export.csv
+solo-combinator metrics stripe founder-payments.csv      # mrr and mom_growth
+solo-combinator metrics git ./founder-repo               # ships_per_week
 solo-combinator safe --invest 125000 --cap 2000000 --round-pre 8000000 --round-size 2000000
 ```
 

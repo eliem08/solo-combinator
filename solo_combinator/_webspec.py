@@ -8,7 +8,7 @@ SPEC = {
     "ops": [
         {
             "prefix": ["rank"],
-            "title": "Score and rank applications from a JSON list",
+            "title": "Score and rank applications from JSON or a form export (CSV)",
             "fields": [
                 {
                     "dest": "file",
@@ -17,7 +17,7 @@ SPEC = {
                     "required": True,
                     "choices": None,
                     "default": None,
-                    "help": None,
+                    "help": "a JSON list, or a CSV export from Typeform, Google Forms, Tally and the like",
                     "scope": "op",
                     "append": False,
                 },
@@ -46,6 +46,46 @@ SPEC = {
                 },
             ],
             "id": "rank",
+        },
+        {
+            "prefix": ["metrics"],
+            "title": "Measure an applicant instead of asking: Stripe revenue or git shipping",
+            "fields": [
+                {
+                    "dest": "source",
+                    "flag": None,
+                    "kind": "text",
+                    "required": True,
+                    "choices": ["stripe", "git"],
+                    "default": None,
+                    "help": None,
+                    "scope": "op",
+                    "append": False,
+                },
+                {
+                    "dest": "path",
+                    "flag": None,
+                    "kind": "dir",
+                    "required": True,
+                    "choices": None,
+                    "default": None,
+                    "help": "a Stripe payments/invoices CSV export, or a git repository",
+                    "scope": "op",
+                    "append": False,
+                },
+                {
+                    "dest": "weeks",
+                    "flag": "--weeks",
+                    "kind": "int",
+                    "required": False,
+                    "choices": None,
+                    "default": 8,
+                    "help": "git: weeks of history to count",
+                    "scope": "op",
+                    "append": False,
+                },
+            ],
+            "id": "metrics",
         },
         {
             "prefix": ["safe"],
