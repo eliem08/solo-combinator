@@ -87,12 +87,15 @@ class IntakeTests(unittest.TestCase):
         subprocess.run(["git", "init", "-q", str(repo)], check=True)
         for i, day in enumerate(("2026-11-02", "2026-11-02", "2026-11-05", "2026-11-10")):
             env["GIT_COMMITTER_DATE"] = env["GIT_AUTHOR_DATE"] = f"{day}T12:00:00"
-            subprocess.run(
-                ["git", "-C", str(repo), "commit", "-q", "--allow-empty", "-m", f"c{i}"], check=True, env=env
-            )
+            (repo / "app.py").write_text(f"VERSION = {i}\n", encoding="utf-8")
+            subprocess.run(["git", "-C", str(repo), "add", "app.py"], check=True, env=env)
+            subprocess.run(["git", "-C", str(repo), "commit", "-q", "-m", f"c{i}"], check=True, env=env)
         self.assertEqual(git_ships_per_week(str(repo), 2, today=date(2026, 11, 12)), 1.5)  # 3 days / 2 weeks
         with self.assertRaises(ValueError):
-            git_ships_per_week(str(self.dir))
+            git_ships_per_week(str(self.dir))  # outside any repository
+        (repo / "untracked").mkdir()
+        with self.assertRaisesRegex(ValueError, "no tracked files"):
+            git_ships_per_week(str(repo / "untracked"))  # inside a repository, but nothing of its own
 
 
 if __name__ == "__main__":

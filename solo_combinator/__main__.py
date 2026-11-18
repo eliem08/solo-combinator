@@ -4,6 +4,7 @@ import json
 import math
 import os
 import sys
+from datetime import date
 
 from .core import post_money_safe, rank
 from .intake import git_ships_per_week, load_applications, stripe_metrics
@@ -33,6 +34,7 @@ def build_parser():
     m.add_argument("source", choices=("stripe", "git"))
     m.add_argument("path", help="a Stripe payments/invoices CSV export, or a git repository")
     m.add_argument("--weeks", type=int, default=8, help="git: weeks of history to count")
+    m.add_argument("--as-of", help="stripe: measure as of this month (YYYY-MM), default now")
     s = sub.add_parser("safe", help="post-money SAFE ownership math")
     s.add_argument("--invest", type=_finite_float, required=True)
     s.add_argument("--cap", type=_finite_float, required=True)
@@ -52,7 +54,13 @@ def _run(argv=None):
 
     if a.cmd == "metrics":
         if a.source == "stripe":
-            m = stripe_metrics(a.path)
+            as_of = None
+            if a.as_of:
+                try:
+                    as_of = date.fromisoformat(f"{a.as_of[:7]}-01")
+                except ValueError:
+                    raise ValueError(f"--as-of {a.as_of!r} is not a month like 2026-11") from None
+            m = stripe_metrics(a.path, as_of)
             for month, revenue in m["months"].items():
                 print(f"  {month}  ${revenue:>12,.2f}")
             print(f"mrr {m['mrr']:.2f}  mom_growth {m['mom_growth']:.4f}   (paste into the application)")

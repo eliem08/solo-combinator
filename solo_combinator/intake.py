@@ -160,16 +160,23 @@ def stripe_metrics(path: str, today: date | None = None) -> dict:
     }
 
 
+def _git(repo: str, *args: str) -> subprocess.CompletedProcess:
+    return subprocess.run(["git", "-C", repo, *args], capture_output=True, text=True, timeout=60)
+
+
 def git_ships_per_week(repo: str, weeks: int = 8, today: date | None = None) -> float:
-    """Days with at least one commit, per week, over the last `weeks` weeks."""
+    """Days with at least one commit touching this folder, per week, over the last `weeks` weeks.
+
+    Only commits under the given folder count, so a folder that merely sits inside some other repository is
+    refused instead of being credited with that repository's history.
+    """
+    tracked = _git(repo, "ls-files", "--", ".")
+    if tracked.returncode or not tracked.stdout.strip():
+        detail = tracked.stderr.strip().splitlines()[0][:160] if tracked.stderr.strip() else "no tracked files here"
+        raise ValueError(f"{repo}: not a git repository ({detail})")
     since = (today or date.today()) - timedelta(weeks=weeks)
-    r = subprocess.run(
-        ["git", "-C", repo, "log", f"--since={since.isoformat()}", "--format=%cs"],
-        capture_output=True,
-        text=True,
-        timeout=60,
-    )
+    r = _git(repo, "log", f"--since={since.isoformat()}", "--format=%cs", "--", ".")
     if r.returncode:
-        raise ValueError(f"{repo}: not a git repository ({r.stderr.strip()[:200]})")
+        raise ValueError(f"{repo}: git log failed ({r.stderr.strip()[:160]})")
     days = {line.strip() for line in r.stdout.splitlines() if line.strip()}
     return round(len(days) / weeks, 2)

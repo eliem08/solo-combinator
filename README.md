@@ -84,7 +84,8 @@ Proprietary. Copyright (c) 2026 eliem08. All rights reserved. Use requires a pai
   carry `$` and commas, and percentages become fractions.
 - **Measured, not self-reported**: `metrics stripe payments.csv` reads a founder's Stripe payments export and
   gives MRR (last complete month, failed charges and refunds excluded) and month-on-month growth (average of the
-  last three months). `metrics git ./repo` counts days with commits per week.
+  last three months). `metrics git ./repo` counts days with commits per week, counting only commits that touch
+  that folder.
 - **Standard deal**: post-money SAFE calculator — ownership at conversion,
   dilution through a priced round
 
@@ -94,7 +95,7 @@ Proprietary. Copyright (c) 2026 eliem08. All rights reserved. Use requires a pai
 pip install -e .
 solo-combinator rank examples/applications.json
 solo-combinator rank typeform-export.csv
-solo-combinator metrics stripe founder-payments.csv      # mrr and mom_growth
+solo-combinator metrics stripe examples/stripe-payments.csv --as-of 2026-11   # mrr and mom_growth
 solo-combinator metrics git ./founder-repo               # ships_per_week
 solo-combinator safe --invest 125000 --cap 2000000 --round-pre 8000000 --round-size 2000000
 ```

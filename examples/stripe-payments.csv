@@ -1,0 +1,6 @@
+id,Created date (UTC),Amount,Amount Refunded,Currency,Converted Amount,Converted Amount Refunded,Fee,Status
+ch_ex1,2026-07-03 10:00:00,1000.00,0.00,usd,1000.00,0.00,29.30,Paid
+ch_ex2,2026-08-03 10:00:00,1100.00,0.00,usd,1100.00,0.00,32.20,Paid
+ch_ex3,2026-09-03 10:00:00,1300.00,100.00,usd,1300.00,100.00,38.00,Paid
+ch_ex4,2026-10-02 10:00:00,1500.00,0.00,usd,1500.00,0.00,43.80,Paid
+ch_ex5,2026-10-09 10:00:00,900.00,0.00,usd,900.00,0.00,26.40,Failed
